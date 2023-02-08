@@ -1,13 +1,39 @@
 package tcpclient;
-import java.net.*;
+import java.net.*; 
 import java.io.*;
 
 public class TCPClient {
+    private static int BUFFERSIZE = 1024;
     
     public TCPClient() {
     }
 
     public byte[] askServer(String hostname, int port, byte [] toServerBytes) throws IOException {
-        return new byte[0];
+
+        //Byte array that grows dynamically since we do not know how much data we receive
+        ByteArrayOutputStream fromServerBuffer = new ByteArrayOutputStream();
+        //Temporarily storage for each "read" iteration of data
+        byte[] intermediateStorage = new byte[BUFFERSIZE];
+
+        //This constructor calls connect to the given hostname at the given port 
+        Socket clientSocket = new Socket(hostname, port);
+        clientSocket.getOutputStream().write(toServerBytes); //send(...)
+        //Get the input stream from the socket to perform recv(...) later
+        InputStream input = clientSocket.getInputStream(); 
+
+        //Temporary saves the returned "read amount" for each read iteration
+        int currentLength;
+
+        while(true){
+            //recv(...)
+            currentLength = input.read(intermediateStorage);
+            //-1 indicates end of the stream, no more data to collect
+            if(currentLength == -1)
+                break;
+            fromServerBuffer.write(intermediateStorage, 0, currentLength);
+        }
+        clientSocket.close();
+
+        return fromServerBuffer.toByteArray();
     }
 }
