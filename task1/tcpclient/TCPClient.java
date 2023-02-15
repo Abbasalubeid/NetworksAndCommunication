@@ -1,11 +1,5 @@
 package tcpclient;
 import java.net.*;
-
-import javax.sound.midi.Receiver;
-
-
-import javax.sound.midi.Receiver;
-
 import java.io.*;
 
 public class TCPClient {
