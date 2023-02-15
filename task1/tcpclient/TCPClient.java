@@ -34,6 +34,24 @@ public class TCPClient {
         return fromServerBuffer.toByteArray();
     }
 
+    public byte[] askServer(String hostname, int port) throws IOException {
+        //Byte array that grows dynamically since we do not know how much data we receive
+        ByteArrayOutputStream fromServerBuffer = new ByteArrayOutputStream();
+        //Temporarily storage for each "read" iteration of data
+        byte[] intermediateStorage = new byte[BUFFERSIZE];
+
+        //This constructor calls connect to the given hostname at the given port 
+        Socket clientSocket = new Socket(hostname, port);
+        //Get the input stream from the socket to perform recv(...) later
+        InputStream input = clientSocket.getInputStream(); 
+        
+        receive(intermediateStorage, fromServerBuffer, input);
+
+        clientSocket.close();
+
+        return fromServerBuffer.toByteArray();
+    }
+
     private void receive(byte[] intermediate, ByteArrayOutputStream buffer, InputStream input)throws IOException{
         //Temporary saves the returned "read amount" for each read iteration
         int currentLength;
@@ -47,7 +65,5 @@ public class TCPClient {
         }
     }
 
-    // public byte[] askServer(String hostname, int port) throws IOException {
 
-    // }
 }
