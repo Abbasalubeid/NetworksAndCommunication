@@ -1,5 +1,11 @@
 package tcpclient;
-import java.net.*; 
+import java.net.*;
+
+import javax.sound.midi.Receiver;
+
+
+import javax.sound.midi.Receiver;
+
 import java.io.*;
 
 public class TCPClient {
@@ -20,20 +26,28 @@ public class TCPClient {
         clientSocket.getOutputStream().write(toServerBytes); //send(...)
         //Get the input stream from the socket to perform recv(...) later
         InputStream input = clientSocket.getInputStream(); 
+        
+        receive(intermediateStorage, fromServerBuffer, input);
 
-        //Temporary saves the returned "read amount" for each read iteration
-        int currentLength;
-
-        while(true){
-            //recv(...)
-            currentLength = input.read(intermediateStorage);
-            //-1 indicates end of the stream, no more data to collect
-            if(currentLength == -1)
-                break;
-            fromServerBuffer.write(intermediateStorage, 0, currentLength);
-        }
         clientSocket.close();
 
         return fromServerBuffer.toByteArray();
     }
+
+    private void receive(byte[] intermediate, ByteArrayOutputStream buffer, InputStream input)throws IOException{
+        //Temporary saves the returned "read amount" for each read iteration
+        int currentLength;
+        while(true){
+            //recv(...)
+            currentLength = input.read(intermediate);
+            //-1 indicates end of the stream, no more data to collect
+            if(currentLength == -1)
+                break;
+            buffer.write(intermediate, 0, currentLength);
+        }
+    }
+
+    // public byte[] askServer(String hostname, int port) throws IOException {
+
+    // }
 }
