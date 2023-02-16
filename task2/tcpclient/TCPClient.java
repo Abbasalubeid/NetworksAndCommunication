@@ -5,7 +5,7 @@ import java.io.*;
 
 public class TCPClient {
     private static int BUFFERSIZE = 1024;
-    boolean shutdown;
+    boolean shutdown = false;
     Integer timeout;
     Integer limit;
 
