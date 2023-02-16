@@ -25,15 +25,11 @@ public class TCPClient {
         //This constructor calls connect to the given hostname at the given port 
         Socket clientSocket = new Socket(hostname, port);
         clientSocket.getOutputStream().write(toServerBytes); //send(...)
-        
-        //Close the outgoing direction after sending data if shutdown is true
-        if (shutdown)   
-            clientSocket.shutDownOutput();
 
         //Get the input stream from the socket to perform recv(...) later
         InputStream input = clientSocket.getInputStream(); 
         
-        receive(intermediateStorage, fromServerBuffer, input);
+        receive(intermediateStorage, fromServerBuffer, input, clientSocket);
 
         clientSocket.close();
 
@@ -51,14 +47,33 @@ public class TCPClient {
         //Get the input stream from the socket to perform recv(...) later
         InputStream input = clientSocket.getInputStream(); 
         
-        receive(intermediateStorage, fromServerBuffer, input);
+        receive(intermediateStorage, fromServerBuffer, input, clientSocket);
 
         clientSocket.close();
 
         return fromServerBuffer.toByteArray();
     }
 
-    private void receive(byte[] intermediate, ByteArrayOutputStream buffer, InputStream input)throws IOException{
+    private void receive(byte[] intermediate, ByteArrayOutputStream buffer, InputStream input, Socket client)throws IOException{
+                
+        //Close the outgoing direction after sending data if shutdown is true
+        if (shutdown)   
+            client.shutdownOutput();
+
+        //Set a timer for the read call on the input
+        if(timeout != null){
+            if(timeout > 0)
+                try {
+                    client.setSoTimeout(timeout);
+                } catch (SocketException e) {
+                    System.out.println(e);
+                }
+            else{
+                System.out.println("Timeout cannot be a negative number");
+                return;
+            }
+        }
+
         //Temporary saves the returned "read amount" for each read iteration
         int currentLength;
         while(true){
