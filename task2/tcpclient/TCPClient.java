@@ -21,7 +21,6 @@ public class TCPClient {
         ByteArrayOutputStream fromServerBuffer = new ByteArrayOutputStream();
         //Temporarily storage for each "read" iteration of data
         byte[] intermediateStorage = new byte[BUFFERSIZE];
-
         //This constructor calls connect to the given hostname at the given port 
         Socket clientSocket = new Socket(hostname, port);
         clientSocket.getOutputStream().write(toServerBytes); //send(...)
@@ -76,15 +75,19 @@ public class TCPClient {
 
         //Temporary saves the returned "read amount" for each read iteration
         int currentLength;
+        //Counter for the data to check if the limit is reached
+        int counter = 0;
+
         while(true){
-            //recv(...)
-            currentLength = input.read(intermediate);
+            currentLength = input.read(intermediate); //recv(...)
+            counter += currentLength;
+
             //-1 indicates end of the stream, no more data to collect
-            if(currentLength == -1)
+            if(currentLength == -1 || (limit != null && counter >= limit)){
                 break;
+            }
+              
             buffer.write(intermediate, 0, currentLength);
         }
     }
-
-
 }
