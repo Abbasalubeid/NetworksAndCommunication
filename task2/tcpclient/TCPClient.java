@@ -61,7 +61,7 @@ public class TCPClient {
 
         //Set a timer for the read call on the input
         if(timeout != null){
-            if(timeout > 0)
+            if(timeout >= 0)
                 try {
                     client.setSoTimeout(timeout);
                 } catch (SocketException e) {
@@ -79,15 +79,21 @@ public class TCPClient {
         int counter = 0;
 
         while(true){
-            currentLength = input.read(intermediate); //recv(...)
-            counter += currentLength;
-
-            //-1 indicates end of the stream, no more data to collect
-            if(currentLength == -1 || (limit != null && counter >= limit)){
-                break;
+            try {    
+                currentLength = input.read(intermediate); //recv(...)
+                buffer.write(intermediate, 0, currentLength);
+                if(currentLength != -1)
+                    counter += currentLength;
+    
+                //-1 indicates end of the stream, no more data to collect
+                if(currentLength == -1 || (limit != null && counter >= limit)){
+                    break;
+                }
+               
+                
+            } catch (SocketTimeoutException e) {
+                return;
             }
-              
-            buffer.write(intermediate, 0, currentLength);
         }
     }
 }
