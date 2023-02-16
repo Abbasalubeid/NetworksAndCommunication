@@ -81,15 +81,16 @@ public class TCPClient {
         while(true){
             try {    
                 currentLength = input.read(intermediate); //recv(...)
-                buffer.write(intermediate, 0, currentLength);
-                if(currentLength != -1)
-                    counter += currentLength;
-    
+
                 //-1 indicates end of the stream, no more data to collect
-                if(currentLength == -1 || (limit != null && counter >= limit)){
+                if(currentLength == -1)
                     break;
-                }
-               
+
+                buffer.write(intermediate, 0, currentLength);
+                counter += currentLength;
+
+                if((limit != null && counter >= limit))
+                    break;
                 
             } catch (SocketTimeoutException e) {
                 return;
