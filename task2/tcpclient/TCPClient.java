@@ -5,8 +5,14 @@ import java.io.*;
 
 public class TCPClient {
     private static int BUFFERSIZE = 1024;
-    
+    boolean shutdown;
+    Integer timeout;
+    Integer limit;
+
     public TCPClient(boolean shutdown, Integer timeout, Integer limit) {
+        this.shutdown = shutdown;
+        this.timeout = timeout;
+        this.limit = limit;
     }
 
     public byte[] askServer(String hostname, int port, byte [] toServerBytes) throws IOException {
@@ -20,6 +26,11 @@ public class TCPClient {
         Socket clientSocket = new Socket(hostname, port);
         clientSocket.getOutputStream().write(toServerBytes); //send(...)
         //Get the input stream from the socket to perform recv(...) later
+        if (shutdown)   
+            clientSocket.shutDownOutput();
+
+
+
         InputStream input = clientSocket.getInputStream(); 
         
         receive(intermediateStorage, fromServerBuffer, input);
