@@ -25,12 +25,12 @@ public class TCPClient {
         //This constructor calls connect to the given hostname at the given port 
         Socket clientSocket = new Socket(hostname, port);
         clientSocket.getOutputStream().write(toServerBytes); //send(...)
-        //Get the input stream from the socket to perform recv(...) later
+        
+        //Close the outgoing direction after sending data if shutdown is true
         if (shutdown)   
             clientSocket.shutDownOutput();
 
-
-
+        //Get the input stream from the socket to perform recv(...) later
         InputStream input = clientSocket.getInputStream(); 
         
         receive(intermediateStorage, fromServerBuffer, input);
