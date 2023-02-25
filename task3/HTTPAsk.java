@@ -5,6 +5,9 @@ public class HTTPAsk {
 
     public static void main(String[] args) {
         try {
+            int port = Integer.parseInt(args[0]);
+            ServerSocket serverSocket = new ServerSocket(port);
+            
             // create a ServerSocket on port 8080
             ServerSocket serverSocket = new ServerSocket(8080);
             
