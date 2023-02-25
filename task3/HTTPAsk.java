@@ -18,16 +18,18 @@ public class HTTPAsk {
             }
         } catch (IOException e) {
             // print the error message in case of exception
-            System.err.println("IOException: " + e.getMessage());
+            System.out.println(e);
         }
     }
 
     private static void handleRequest(Socket clientSocket) throws IOException {
         // construct the HTTP response header
-        String response = "HTTP/1.1 200 OK\r\n" +
-                          "Content-Type: text/plain\r\n" +
-                          "\r\n" +
-                          "This is from HTTPAsk";
+        //first \r\n ends the headers, and the second \r\n is an empty line 
+        //that separates the headers from the message body.
+        String response = "HTTP/1.1 200 OK\r\n" //status 
+                          + "Content-Type: text/html\r\n" //Header 
+                          + "\r\n" 
+                          + "<div>This is from HTTPAsk</div>"; //Body
         byte[] responseBytes = response.getBytes("UTF-8");
     
         // get the output stream of the client socket
@@ -35,7 +37,6 @@ public class HTTPAsk {
         
         // write the response bytes to the output stream and flush the stream
         outputStream.write(responseBytes);
-        outputStream.flush();
     
         // close the client socket
         clientSocket.close();
