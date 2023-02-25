@@ -24,12 +24,12 @@ public class HTTPAsk {
 
     private static void handleRequest(Socket clientSocket) throws IOException {
         // construct the HTTP response header
-        //first \r\n ends the headers, and the second \r\n is an empty line 
-        //that separates the headers from the message body.
+        // first \r\n ends the headers, and the second double \r\n is an empty line 
+        // that separates the headers from the message body.
         String response = "HTTP/1.1 200 OK\r\n" //status 
                           + "Content-Type: text/html\r\n" //Header 
                           + "\r\n" 
-                          + "<div>This is from HTTPAsk</div>"; //Body
+                          + "<div>This is a test from HTTPAsk</div>"; //Body
         byte[] responseBytes = response.getBytes("UTF-8");
     
         // get the output stream of the client socket
