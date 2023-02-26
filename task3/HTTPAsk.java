@@ -24,6 +24,31 @@ public class HTTPAsk {
     }
 
     private static void handleRequest(Socket clientSocket) throws IOException {
+        String url = getURL(clientSocket);
+
+        byte[] responseBytes = getResponse(url);
+
+        // write the response to the output stream
+        OutputStream outputStream = clientSocket.getOutputStream(); 
+        outputStream.write(responseBytes); 
+    
+        outputStream.close();
+        clientSocket.close(); 
+    }
+
+    private static String getURL(Socket clientSocket) throws IOException {
+        // read the client request and decode it
+        byte[] buffer = new byte[BUFFERSIZE];
+        clientSocket.getInputStream().read(buffer);
+        String request = new String(buffer, "UTF-8");
+        System.out.println("Request: " + request); // print the client request to the console
+    
+        // extract the URL and query string
+        String[] parts = request.split(" "); // first part is just "GET"
+        return parts[1]; // extract the URL from the second part of the request string
+     }
+
+     private static byte[] getResponse(String url) throws UnsupportedEncodingException{
         String hostname = null;
         Integer port = null;
         String string = null;
@@ -31,7 +56,6 @@ public class HTTPAsk {
         Integer limit = null;
         Integer timeout = null;
 
-        String url = getURL(clientSocket);
         String[] urlParts = url.split("\\?"); // split the URL into parts using ? as the separator
         String path = urlParts[0]; // extract the path from the first part of the URL string
         String queryString = urlParts.length > 1 ? urlParts[1] : ""; // extract the query string from the second part of the URL string, if it exists
@@ -40,7 +64,8 @@ public class HTTPAsk {
         // create a Scanner object to parse the query string
         Scanner scanner = new Scanner(queryString);
         scanner.useDelimiter("&");
-        
+
+                
         // loop through the query string parameters
         while (scanner.hasNext()) {
             // get the parameter and value
@@ -85,28 +110,7 @@ public class HTTPAsk {
                 + "<p>timeout: " + timeout + "</p>\n"
                 + "<h1>Response:</h1>\n"
                 + "<p>timeout: " + timeout + "</p>\n";
-        byte[] responseBytes = response.getBytes("UTF-8"); // convert the response string to bytes using UTF-8 encoding
-    
-        // write the response to the output stream
-        OutputStream outputStream = clientSocket.getOutputStream(); 
-        outputStream.write(responseBytes); 
-    
-        outputStream.close();
-        clientSocket.close(); 
-    }
-
-    private static String getURL(Socket clientSocket) throws IOException {
-        // read the client request and decode it
-        byte[] buffer = new byte[BUFFERSIZE];
-        clientSocket.getInputStream().read(buffer);
-        String request = new String(buffer, "UTF-8");
-        System.out.println("Request: " + request); // print the client request to the console
-    
-        // extract the URL and query string
-        String[] parts = request.split(" "); // first part is just "GET"
-        return parts[1]; // extract the URL from the second part of the request string
+        return response.getBytes("UTF-8"); // convert the response string to bytes using UTF-8 encoding
      }
-
-     private static String getResponse(String, )
 
 }
