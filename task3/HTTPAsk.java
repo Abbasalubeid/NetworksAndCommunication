@@ -1,5 +1,6 @@
 import java.net.*;
 import java.io.*;
+import java.util.Scanner;
 
 public class HTTPAsk {
 
@@ -12,8 +13,6 @@ public class HTTPAsk {
             while (true) {
                 // accept the incoming client connection
                 Socket clientSocket = serverSocket.accept();
-                
-                // handle the incoming client request
                 handleRequest(clientSocket);
                 
             }
@@ -29,6 +28,21 @@ public class HTTPAsk {
         String queryString = urlParts.length > 1 ? urlParts[1] : ""; // extract the query string from the second part of the URL string, if it exists
         System.out.println("Path: " + path); // print the path to the console
         System.out.println("Query string: " + queryString); // print the query string to the console
+
+        //Pare the query string
+        Scanner scanner = new Scanner(queryString);
+        scanner.useDelimiter("&");
+        while (scanner.hasNext()) {
+            // get the parameter and value
+            String[] param = scanner.next().split("=");
+            String paramName = param[0];
+            // If there is a value, otherwise ""
+            String paramValue = param.length > 1 ? param[1] : "";
+    
+            // print the parameter and value
+            System.out.println(paramName + " = " + paramValue);
+        }
+
         // create a response
         String response = "HTTP/1.1 200 OK\r\n" // create the HTTP response status line
                 + "Content-Type: text/html\r\n" // add the HTTP response headers
@@ -53,8 +67,8 @@ public class HTTPAsk {
         System.out.println("Request: " + request); // print the client request to the console
     
         // extract the URL and query string
-        String[] parts = request.split(" "); // First part is just "GET"
+        String[] parts = request.split(" "); // first part is just "GET"
         return parts[1]; // extract the URL from the second part of the request string
      }
-    
+
 }
