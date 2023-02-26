@@ -25,13 +25,11 @@ public class HTTPAsk {
 
     private static void handleRequest(Socket clientSocket) throws IOException {
         String url = getURL(clientSocket);
-
         byte[] responseBytes = getResponse(url);
 
         // write the response to the output stream
         OutputStream outputStream = clientSocket.getOutputStream(); 
         outputStream.write(responseBytes); 
-    
         outputStream.close();
         clientSocket.close(); 
     }
@@ -51,7 +49,7 @@ public class HTTPAsk {
      private static byte[] getResponse(String url) throws UnsupportedEncodingException{
         String hostname = null;
         Integer port = null;
-        String string = null;
+        String string = "Nothing";
         boolean shutdown = false;
         Integer limit = null;
         Integer timeout = null;
@@ -65,7 +63,6 @@ public class HTTPAsk {
         Scanner scanner = new Scanner(queryString);
         scanner.useDelimiter("&");
 
-                
         // loop through the query string parameters
         while (scanner.hasNext()) {
             // get the parameter and value
@@ -94,23 +91,32 @@ public class HTTPAsk {
             } 
         }
 
+        byte[] serverBytes = new byte[0];
+        String serverOutput = "";
+        try {
+            TCPClient client = new TCPClient(shutdown, timeout, limit);
+            serverBytes = client.askServer(hostname, port, string.getBytes());
+            serverOutput = new String(serverBytes);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
         // create a response
         String response = "HTTP/1.1 200 OK \r\n" // create the HTTP response status line
-                + "Content-Type: text/html\r\n" // add the HTTP response headers
-                + "\r\n" // add an empty line to separate the headers from the body
-                + "<h1>HTTP Ask Server</h1>\n" // add the HTML response body
-                + "<p>Path: " + path + "</p>\n"
-                + "<h2>The query you sent:</h2>\n"
-                + "<p>Query string: " + queryString + "</p>\n"
-                + "<p>hostname: " + hostname + "</p>\n"
-                + "<p>port: " + port + "</p>\n"
-                + "<p>string: " + string + "</p>\n"
-                + "<p>shutdown: " + shutdown + "</p>\n"
-                + "<p>limit: " + limit + "</p>\n"
-                + "<p>timeout: " + timeout + "</p>\n"
-                + "<h1>Response:</h1>\n"
-                + "<p>timeout: " + timeout + "</p>\n";
-        return response.getBytes("UTF-8"); // convert the response string to bytes using UTF-8 encoding
+        + "Content-Type: text/html\r\n" // add the HTTP response headers
+        + "\r\n" // add an empty line to separate the headers from the body
+        + "<h1>HTTP Ask Server</h1>\n" // add the HTML response body
+        + "<p>Path: " + path + "</p>\n"
+        + "<h2>The query you sent:</h2>\n"
+        + "<p>Query string: " + queryString + "</p>\n"
+        + "<p>hostname: " + hostname + "</p>\n"
+        + "<p>port: " + port + "</p>\n"
+        + "<p>string: " + string + "</p>\n"
+        + "<p>shutdown: " + shutdown + "</p>\n"
+        + "<p>limit: " + limit + "</p>\n"
+        + "<p>timeout: " + timeout + "</p>\n"
+        + "<h1>Response:</h1>\n"
+        + "<p>" + serverOutput + "</p>\n";
+        return response.getBytes("UTF-8"); // convert the response string to bytes 
      }
 
 }
