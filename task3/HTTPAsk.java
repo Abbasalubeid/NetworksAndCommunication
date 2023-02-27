@@ -92,7 +92,7 @@ public class HTTPAsk {
                         port = Integer.parseInt(param[1]);
                         break;
                     case "string":
-                        stringToServer = param[1];
+                        stringToServer = param[1] + "\n";
                         break;
                     case "shutdown":
                         shutdown = Boolean.parseBoolean(param[1]);
@@ -126,8 +126,12 @@ public class HTTPAsk {
                     response = "HTTP/1.1 404 Not Found \r\n\r\n"; 
                     throw new Exception("404 Not Found");
                 }
-                else
-                    System.out.println("From TCPClient call " + e);
+                else{
+                    // if something we don't know happens in the connection
+                    // not part of task3 but so that the program continues
+                    response = "HTTP/1.1 503 Service Unavailable \r\n\r\n"; 
+                    throw new Exception("503 Service Unavailable");
+                }
             }
             response = "HTTP/1.1 200 OK\r\n" // create the HTTP response status line
             + "Content-Type: text/html\r\n" // add the HTTP response headers
