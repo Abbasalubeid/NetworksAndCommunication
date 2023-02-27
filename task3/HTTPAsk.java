@@ -40,14 +40,16 @@ public class HTTPAsk {
         byte[] buffer = new byte[BUFFERSIZE];
         clientSocket.getInputStream().read(buffer);
         String request = new String(buffer, "UTF-8");
-        System.out.println("Request: " + request); // print the client request to the console
     
         // extract the URL and query string
-        String[] parts = request.split(" "); // GET... 
-        // if (!parts[0].equals("GET") || !request.contains("HTTP/1.1")) 
-        //     response = "HTTP/1.1 400 Bad Request \r\n\r\n";
-        // else
-        //     response ="HTTP/1.1 200 OK \r\n";
+        String[] parts = request.split(" "); // GET request parts
+
+        // It has to be a GET request
+        if (!parts[0].equals("GET") || !request.contains("HTTP/1.1")){
+            response = "HTTP/1.1 400 Bad Request \r\n\r\n";
+            throw new Exception("400 Bad Request");
+        } 
+
         return parts[1]; // extract the URL from the second part of the request string
      }
 
@@ -65,11 +67,11 @@ public class HTTPAsk {
             String[] urlParts = url.split("\\?"); // split the URL into parts using ? as the separator
             String path = urlParts[0]; // extract the path from the first part of the URL string
     
-            // if(urlParts.length < 0 || !path.equals("/ask"))
-            //     response = "HTTP/1.1 404 Not Found\r\n\r\n";
-            // else 
-            //     response = "HTTP/1.1 200 OK \r\n"; 
-            
+            // request for a resource we dont have (example: favicon)
+            if(!path.equals("/ask")){
+                response = "HTTP/1.1 404 Not Found \r\n\r\n";
+                throw new Exception("404 Not Found");
+            }
             
             // extract the query string from the second part of the URL string, if it exists
             String queryString = urlParts.length > 1 ? urlParts[1] : ""; 
@@ -106,6 +108,7 @@ public class HTTPAsk {
                 } 
             }
     
+            // hostname and port are not optional
             if ((hostname == null || port == null)){
                 response = "HTTP/1.1 400 Bad Request \r\n\r\n";
                 throw new Exception("400 Bad Request");
@@ -119,10 +122,8 @@ public class HTTPAsk {
                 serverOutput = new String(serverBytes);
             } catch (Exception e) {
                 if (e instanceof java.net.UnknownHostException){
-                    response = "HTTP/1.1 404 Not Found \r\n\r\n"
-                    + "Content-Type: text/html\r\n"
-                    + "\r\n" 
-                    + "<h1>" + "404 Not Found" + "</h1>\n";
+                    // example: calling time.nift.gov instead of time.nist.gov
+                    response = "HTTP/1.1 404 Not Found \r\n\r\n"; 
                     throw new Exception("404 Not Found");
                 }
                 else
