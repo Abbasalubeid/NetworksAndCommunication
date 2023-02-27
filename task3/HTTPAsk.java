@@ -62,14 +62,16 @@ public class HTTPAsk {
 
         String[] urlParts = url.split("\\?"); // split the URL into parts using ? as the separator
         String path = urlParts[0]; // extract the path from the first part of the URL string
-        if(!path.equals("/ask")){
-            status = "HTTP/1.1 400 Bad Request \r\n";
-        }
+
+        if(urlParts.length < 0 || !path.equals("/ask"))
+            status = "HTTP/1.1 404 Not Found\r\n";
         else 
             status = "HTTP/1.1 200 OK \r\n"; 
-        String queryString = urlParts.length > 1 ? urlParts[1] : ""; // extract the query string from the second part of the URL string, if it exists
-        System.out.println("Path: " + path); // print the path to the console
-        System.out.println("Query string: " + queryString); // print the query string to the console
+        
+        
+        // extract the query string from the second part of the URL string, if it exists
+        String queryString = urlParts.length > 1 ? urlParts[1] : ""; 
+
         // create a Scanner object to parse the query string
         Scanner scanner = new Scanner(queryString);
         scanner.useDelimiter("&");
@@ -102,9 +104,10 @@ public class HTTPAsk {
             } 
         }
 
-        if (hostname == null || port == null)
+        if ((hostname == null || port == null))
             status = "HTTP/1.1 400 Bad Request \r\n";
-        else
+        else if (!status.equals("HTTP/1.1 400 Bad Request \r\n") 
+            || !status.equals("HTTP/1.1 404 Not Found\r\n")) 
             status ="HTTP/1.1 200 OK \r\n";
 
         byte[] serverBytes = new byte[0];
@@ -117,12 +120,12 @@ public class HTTPAsk {
             System.out.println(e);
         }
         String response = "";
-        // create a response
-        if(status.equals("HTTP/1.1 400 Bad Request \r\n")){
+        // create a responset
+        if(status.equals("HTTP/1.1 400 Bad Request \r\n") || status.equals("HTTP/1.1 404 Not Found\r\n")){
             response = status // create the HTTP response status line
             + "Content-Type: text/html\r\n" // add the HTTP response headers
-            + "\r\n" // add an empty line to separate the headers from the body
-            + "<h1>400 Bad request</h1>\n"; // add the HTML response body
+            + "\r\n"; // add an empty line to separate the headers from the body
+            // + "<h1>400 Bad request</h1>\n"; // add the HTML response body
         }
         else{
             response = status // create the HTTP response status line
