@@ -46,7 +46,10 @@ public class HTTPAsk {
 
         // It has to be a GET request
         if (!parts[0].equals("GET") || !request.contains("HTTP/1.1")){
-            response = "HTTP/1.1 400 Bad Request \r\n\r\n";
+            response = "HTTP/1.1 400 Bad Request \r\n"
+            + "Content-Type: text/html\r\n" 
+            + "\r\n"
+           + "<h1>400 Bad Request</h1>\n";  
             throw new Exception("400 Bad Request");
         } 
 
@@ -69,7 +72,10 @@ public class HTTPAsk {
     
             // request for a resource we dont have (example: favicon)
             if(!path.equals("/ask")){
-                response = "HTTP/1.1 404 Not Found \r\n\r\n";
+                response = "HTTP/1.1 404 Not Found \r\n"
+                + "Content-Type: text/html\r\n" 
+                + "\r\n"
+               + "<h1>404 Not Found</h1>\n";  
                 throw new Exception("404 Not Found");
             }
             
@@ -110,7 +116,10 @@ public class HTTPAsk {
     
             // hostname and port are not optional
             if ((hostname == null || port == null)){
-                response = "HTTP/1.1 400 Bad Request \r\n\r\n";
+                response = "HTTP/1.1 400 Bad Request \r\n"
+                + "Content-Type: text/html\r\n" 
+                + "\r\n"
+               + "<h1>400 Bad Request</h1>\n";  
                 throw new Exception("400 Bad Request");
             }
     
@@ -123,13 +132,19 @@ public class HTTPAsk {
             } catch (Exception e) {
                 if (e instanceof java.net.UnknownHostException){
                     // example: calling time.nift.gov instead of time.nist.gov
-                    response = "HTTP/1.1 404 Not Found \r\n\r\n"; 
+                    response = "HTTP/1.1 404 Not Found \r\n"
+                    + "Content-Type: text/html\r\n" 
+                    + "\r\n"
+                   + "<h1>404 Not Found</h1>\n";  
                     throw new Exception("404 Not Found");
                 }
                 else{
                     // if something we don't know happens in the connection
                     // not part of task3 but so that the program continues
-                    response = "HTTP/1.1 503 Service Unavailable \r\n\r\n"; 
+                    response = "HTTP/1.1 503 Service Unavailable \r\n"
+                     + "Content-Type: text/html\r\n" 
+                     + "\r\n"
+                    + "<h1>503 Service Unavailable</h1>\n";  
                     throw new Exception("503 Service Unavailable");
                 }
             }
