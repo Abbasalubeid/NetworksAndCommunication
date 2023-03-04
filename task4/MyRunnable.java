@@ -1,6 +1,10 @@
-import java.net.Socket;
+import java.net.*;
+import java.io.*;
+import java.util.Scanner;
 
 public class MyRunnable implements Runnable {
+    private static int BUFFERSIZE = 1024;
+    private static String response = "";
     private Socket connectionSocket;
 
     public MyRunnable (Socket connetionSocket){
@@ -9,8 +13,13 @@ public class MyRunnable implements Runnable {
 
     @Override
     // this is called when the start method of the thread is called
-    public run(){
-        handleRequest(connectionSocket);
+    public void run(){
+        try {
+            handleRequest(connectionSocket);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        
     }
 
     private static void handleRequest(Socket clientSocket) throws IOException {
