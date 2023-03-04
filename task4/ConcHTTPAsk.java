@@ -3,8 +3,6 @@ import java.io.*;
 import java.util.Scanner;
 
 public class ConcHTTPAsk {
-    private static int BUFFERSIZE = 1024;
-    private static String response = "";
     public static void main(String[] args) {
         try {
             int port = Integer.parseInt(args[0]);
@@ -14,7 +12,10 @@ public class ConcHTTPAsk {
             while (true) {
                 // accept the incoming client connection
                 Socket clientSocket = serverSocket.accept();
-                handleRequest(clientSocket);
+                MyRunnable runnable = new MyRunnable(clientSocket);
+                Thread thread = new Thread(runnable);
+                // calls run from runnable
+                thread.start();
             }
         } catch (Exception e) {
             System.out.println("From main " + e);
