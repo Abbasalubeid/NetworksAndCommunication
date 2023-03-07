@@ -1,5 +1,5 @@
-# IK1203
-Networks and Communication
+# IK1203 Networks and Communication
+
 
 <h2>Course Contents</h2>
 
